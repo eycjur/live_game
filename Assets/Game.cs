@@ -1,23 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+
+// public class StageConfig
+// {
+//     public string name;
+//     public List<CellConfig> cells;
+// }
+
+// public class CellConfig
+// {
+//     public int x;
+//     public int y;
+// }
 
 // life game用のクラス
 public class Game : MonoBehaviour
 {
-    static readonly int X_SIZE = 100;
-    static readonly int Y_SIZE = 100;
+    static readonly int X_SIZE = 30;
+    static readonly int Y_SIZE = 30;
 
     static readonly int ALIVE = 1;
     static readonly int DEAD = 0;
 
     static int[,] cells = new int[X_SIZE, Y_SIZE];
 
+    string stageName;
+    float privious_time;
+    List<StageConfig> stageConfigs;
+    StageConfig selectedStage;
+
     // セルの実態
     GameObject[,] _cellsObject = new GameObject[X_SIZE, Y_SIZE];
-
-    [SerializeField]
-    int UPDATE_INTERVAL = 1;
 
     [SerializeField]
     GameObject _liveCellPrefab;
@@ -25,9 +40,54 @@ public class Game : MonoBehaviour
     [SerializeField]
     GameObject _deadCellPrefab;
 
+    [System.Serializable]
+    private class StageConfigWrapper
+    {
+        public List<StageConfig> stages;
+    }
+
+    [System.Serializable]
+    private class StageConfig
+    {
+        public string name;
+        public float updateTimeInterval;
+        public List<int> aliveConditions;
+        public List<int> birthConditions;
+        public List<CellConfig> cells;
+    }
+
+    [System.Serializable]
+    private class CellConfig
+    {
+        public int x;
+        public int y;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        string stageName = "Stage1";
+
+        string jsonPath = "Assets/Configs/stage_config.json";
+        string jsonContents = File.ReadAllText(jsonPath);
+        StageConfigWrapper stageConfigWrapper = JsonUtility.FromJson<StageConfigWrapper>(jsonContents);
+        stageConfigs = stageConfigWrapper.stages;
+
+        SetStage(stageName);
+    }
+
+    void SetStage(string stageName)
+    {
+        float privious_time = Time.time;
+
+        // ステージの設定
+        selectedStage = stageConfigs.Find(stage => stage.name == stageName);
+        if (selectedStage == null)
+        {
+            Debug.LogError($"Stage with name '{stageName}' not found in the JSON file.");
+            return;
+        }
+
         // 初期化
         for (int x = 0; x < X_SIZE; x++)
         {
@@ -38,14 +98,16 @@ public class Game : MonoBehaviour
         }
 
         // 初期状態
-        cells[52, 55] = ALIVE;
-        cells[53, 53] = ALIVE;
-        cells[53, 55] = ALIVE;
-        cells[55, 54] = ALIVE;
-        cells[56, 55] = ALIVE;
-        cells[57, 55] = ALIVE;
-        cells[58, 55] = ALIVE;
-
+        foreach (CellConfig cellConfig in selectedStage.cells)
+        {
+            int x = cellConfig.x;
+            int y = cellConfig.y;
+            if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
+            {
+                cells[x, y] = ALIVE;
+            }
+        }
+        
         // セルの生成
         drawCells();
     }
@@ -54,10 +116,11 @@ public class Game : MonoBehaviour
     void Update()
     {
         // 一定間隔で更新
-        if (Time.frameCount % UPDATE_INTERVAL != 0)
+        if (Time.time - privious_time < selectedStage.updateTimeInterval)
         {
             return;
         }
+        privious_time = Time.time;
 
         // セルの状態を更新
         cells = CalculateNextCells(cells);
@@ -67,7 +130,7 @@ public class Game : MonoBehaviour
     }
 
     // セルの状態を更新するメソッド
-    public static int[,] CalculateNextCells(int[,] cells)
+    public int[,] CalculateNextCells(int[,] cells)
     {
         // セルの状態を更新
         int[,] nextCells = new int[X_SIZE, Y_SIZE];
@@ -98,7 +161,6 @@ public class Game : MonoBehaviour
                         }
                         if (cells[nx, ny] == ALIVE)
                         {
-                            Debug.Log("生存セル: " + dx + ", " + dy);
                             aliveCount++;
                         }
                     }
@@ -106,22 +168,20 @@ public class Game : MonoBehaviour
                 if (cells[x, y] == ALIVE)
                 {
                     // 生存
-                    if (aliveCount == 2 || aliveCount == 3)
+                    if (selectedStage.aliveConditions.Contains(aliveCount))
                     {
-                        Debug.Log("生存: " + aliveCount);
                         nextCells[x, y] = ALIVE;
                     }
                     // 過疎 or 過密
                     else
                     {
-                        Debug.Log("過疎 or 過密: " + aliveCount);
                         nextCells[x, y] = DEAD;
                     }
                 }
                 else
                 {
                     // 誕生
-                    if (aliveCount == 3)
+                    if (selectedStage.birthConditions.Contains(aliveCount))
                     {
                         nextCells[x, y] = ALIVE;
                     }
@@ -145,7 +205,7 @@ public class Game : MonoBehaviour
             {
                 Destroy(_cellsObject[x, y]);
                 _cellsObject[x, y] = Instantiate(cells[x, y] == ALIVE ? _liveCellPrefab : _deadCellPrefab);
-                _cellsObject[x, y].transform.localPosition = new Vector3(x, y, 0);
+                _cellsObject[x, y].transform.localPosition = new Vector3(x - X_SIZE / 2, y - Y_SIZE / 2, 0);
             }
         }
     }

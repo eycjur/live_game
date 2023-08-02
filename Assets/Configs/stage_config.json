@@ -1,0 +1,32 @@
+{
+  "stages": [
+    {
+      "name": "Stage1",
+      "updateTimeInterval": 0.5,
+      "aliveConditions": [2, 3],
+      "birthConditions": [3],
+      "cells": [
+        { "x": 12, "y": 15 },
+        { "x": 13, "y": 13 },
+        { "x": 13, "y": 15 },
+        { "x": 15, "y": 14 },
+        { "x": 16, "y": 15 },
+        { "x": 17, "y": 15 },
+        { "x": 18, "y": 15 }
+      ]
+    },
+    {
+      "name": "Stage2",
+      "updateTimeInterval": 1.0,
+      "aliveConditions": [2, 3, 4],
+      "birthConditions": [3],
+      "cells": [
+        { "x": 8, "y": 8 },
+        { "x": 8, "y": 9 },
+        { "x": 8, "y": 10 },
+        { "x": 9, "y": 10 },
+        { "x": 10, "y": 9 }
+      ]
+    }
+  ]
+}
