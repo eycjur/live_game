@@ -17,7 +17,7 @@ public class StageManager
     // JSONファイルからステージの設定を読み込む
     private void LoadStageConfigs(string jsonPath)
     {
-        string jsonContents = File.ReadAllText(jsonPath);
+        string jsonContents = File.ReadAllText(System.IO.Path.Combine(Application.streamingAssetsPath, jsonPath));
         StageConfigWrapper stageConfigWrapper = JsonUtility.FromJson<StageConfigWrapper>(jsonContents);
         Debug.Log("success to load stage configs: " + jsonPath);
         this.stageConfigs = stageConfigWrapper.stages;

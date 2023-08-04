@@ -4,7 +4,7 @@ using UnityEngine;
 public class CellGrid
 {
     private float botom_left_x = 0; // 左下のx座標
-    private float botom_left_y = 150; // 左下のy座標
+    private float botom_left_y = 350; // 左下のy座標
 
     // セルのスケール
     private float cellScale;
@@ -21,7 +21,7 @@ public class CellGrid
         this.Cells = new Cell[rows, columns];
         // 画面上の横幅をセルの数で割る
         // 横幅はカメラサイズ * 9 /16 * 2
-        this.cellScale = 144f * 2 / Columns;
+        this.cellScale = Screen.width / Columns;
         InitializeCells(Cell.State.Dead);
     }
 

@@ -28,7 +28,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        this.stageManager = new StageManager("Assets/Configs/stage_config.json");
+        this.stageManager = new StageManager("stage_config.json");
         this.cellGrid = new CellGrid(30, 30);
         this.cellDrawer = new CellDrawer(this.cellGrid, this.liveCellPrefab, this.deadCellPrefab, Destroy, Instantiate);
 
