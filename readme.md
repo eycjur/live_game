@@ -2,6 +2,8 @@
 ライフゲーム[wikipedia](https://ja.wikipedia.org/wiki/%E3%83%A9%E3%82%A4%E3%83%95%E3%82%B2%E3%83%BC%E3%83%A0)に、
 ユーザーがセルの生死を操作できる機能を付け加えたゲームで、生き残ったセルの数を競うゲームです。
 
+https://github.com/eycjur/live_game/assets/63308909/633c6208-9883-4258-b44b-7041a0900af8
+
 ## ビルド
 1. ファイル -> ビルド設定 -> iOS -> ビルドからビルドを実行
 2. Unity-iPhone.xcodeprojを開く
