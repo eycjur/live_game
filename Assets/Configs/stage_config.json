@@ -2,7 +2,7 @@
   "stages": [
     {
       "name": "Stage1",
-      "updateTimeInterval": 0.5,
+      "updateTimeInterval": 1.0,
       "aliveConditions": [2, 3],
       "birthConditions": [3],
       "cells": [
@@ -17,7 +17,7 @@
     },
     {
       "name": "Stage2",
-      "updateTimeInterval": 1.0,
+      "updateTimeInterval": 0.5,
       "aliveConditions": [2, 3, 4],
       "birthConditions": [3],
       "cells": [
